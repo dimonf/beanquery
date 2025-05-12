@@ -322,6 +322,10 @@ class DispatchingShell(cmd.Cmd):
                     self.error(str(ex))
                 except AttributeError:
                     self.error(f'variable "{name}" does not exist')
+            elif len(components) % 2 == 0:
+                #multiple settings
+                for k,v in zip(components[::2], components[1::2]):
+                    self.do_set(f"{k} {v}")
             else:
                 self.error('invalid number of arguments')
 
