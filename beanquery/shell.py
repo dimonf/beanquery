@@ -183,10 +183,17 @@ class DispatchingShell(cmd.Cmd):
             # Setup ``readline`` history handling.
             history_filepath = path.expanduser(HISTORY_FILENAME)
             os.makedirs(path.dirname(history_filepath), exist_ok=True)
+            h_len = 0
             with suppress(FileNotFoundError):
                 readline.read_history_file(history_filepath)
                 readline.set_history_length(2048)
-            atexit.register(readline.write_history_file, history_filepath)
+                h_len = readline.get_current_history_length()
+            def save(prev_h_len, histfile):
+                new_h_len = readline.get_current_history_length()
+                readline.append_history_file(new_h_len - prev_h_len, histfile)
+
+
+            atexit.register(save, h_len, history_filepath)
 
         warnings.showwarning = self.warning
 
